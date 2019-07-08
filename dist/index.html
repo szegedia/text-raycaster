@@ -1,0 +1,43 @@
+<!doctype html>
+<html>
+  <head>
+    <script src="/src.a2b27638.js"></script>
+    <style>#minimap {
+        position: absolute;
+        top: 1rem;
+        right: 10rem;
+        border: 2px solid black;
+      }
+
+      #minimapPlayer {
+        position: absolute;
+        width: 1rem;
+        height: 1rem;
+        background: black;
+        border-radius: 100%;
+      }
+
+      /* #minimapPlayer::after {
+        position: absolute;
+        top: 0;
+        left: 0.5rem;
+        width: 0;
+        height: 0;
+        border-style: solid;
+        border-width: 1rem 1rem 0 1rem;
+        border-color: #007bff transparent transparent transparent;
+        content: '';
+        transform: rotate(90deg);
+      } */</style>
+  </head>
+  <body>
+    <div id="playerInfo"></div>
+    <div id="debugger"></div>
+    <div id="canvas"></div>
+    <div id="minimap">
+      <canvas id="hitbox" width="400" height="300"></canvas>
+      <span id="minimapPlayer"></span>
+    </div>
+  </body>
+</html>
+  
