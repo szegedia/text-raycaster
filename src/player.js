@@ -4,14 +4,14 @@ export default class Player {
   constructor (x, y, direction) {
     this.x = x
     this.y = y
-    this.speed = 5
-    this.rotateSpeed = 3
+    this.speed = 10
+    this.rotateSpeed = Math.PI * 2
     this.direction = direction
     this.debugPane = document.body.querySelector('#playerInfo')
   }
 
   rotate (angle) {
-    this.direction += angle
+    this.direction = (this.direction + angle + circle) % circle
   }
 
   move (distance, map) {
@@ -25,16 +25,8 @@ export default class Player {
   update (controls, map, tick) {
     if (controls.left) this.rotate(-this.rotateSpeed * tick)
     if (controls.right) this.rotate(this.rotateSpeed * tick)
-    if (controls.forward) {
-      // this.move((this.speed * tick), map)
-      this.x += Math.cos(this.direction) * this.speed * tick
-      this.y += Math.sin(this.direction) * this.speed * tick
-    }
-    if (controls.backward) {
-      // this.move(-(this.speed * tick), map)
-      this.x -= Math.cos(this.direction) * this.speed * tick
-      this.y -= Math.sin(this.direction) * this.speed * tick
-    }
+    if (controls.forward) this.move((this.speed * tick), map)
+    if (controls.backward) this.move(-(this.speed * tick), map)
 
     this.debugPane.innerHTML =`
     <div>tick: ${tick}</div>

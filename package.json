@@ -7,6 +7,7 @@
     "dev": "parcel index.html"
   },
   "devDependencies": {
-    "parcel": "^1.12.3"
+    "parcel": "^1.12.3",
+    "sass": "^1.22.3"
   }
 }

@@ -1,74 +1,52 @@
-export default class Camera {
-  constructor (canvas, player, map) {
-    this.canvas = canvas
-    this.map = map
-    this.resolution = 320
-    this.spacing = this.map.width / this.resolution;
-    this.depth = 14
-    this.fov = 0.8
-    this.screen = new Array(this.map.width * this.map.height)
+import Ray from './ray'
 
-    this.debugger = document.querySelector('#debugger')
-    this.canvas = document.querySelector('#hitbox')
-    this.ctx = this.canvas.getContext('2d')
-    this.ctx.fillStyle = '#ff0000'
+export default class Camera {
+  constructor (map, player) {
+    this.map = map
+    this.width = 36
+    this.height = 20
+    this.player = player
+    this.depth = 18
+    this.fov = 0.8
+    this.screen = new Array(this.width * this.height)
+
+    this.init()
   }
 
-  render (player) {
-    for (let x = 0; x < this.map.width; x++) {
-      const angle = (player.direction - this.fov / 2) + (x / this.map.width) * this.fov
-      
-      let hitWall = false
-      let distance = 0
+  init () {
+    this.canvas = document.createElement('pre')
+    this.canvas.classList.add('game-screen')
 
-      const eyeX = Math.cos(angle)
-      const eyeY = Math.sin(angle)
+    document.body.append(this.canvas)
+  }
 
-      this.ctx.clearRect(0, 0, 400, 300)
-      this.ctx.beginPath()
+  render () {
+    for (let x = 0; x < this.width; x++) {
+      const angle = (this.player.direction - this.fov / 2) + (x / this.width) * this.fov
+      const ray = new Ray(this.map, {width: this.width, height: this.height}, this.player, angle)
+      const distance = ray.distance
+      // const distance = this.map.cast(this.player, this.player.direction + angle, this.depth)
 
-      while (!hitWall && distance < this.depth) {
-        distance += 0.1
+      const wallheight = Math.min(this.map.height / distance * 255, this.height)
+      const ceiling = this.map.height / this.height * distance
+      const floor = this.height - ceiling
 
-        const testX = Math.floor(player.x + eyeX * distance)
-        const testY = Math.floor(player.y + eyeY * distance)
-
-        if (testX < 0 || testX >= this.map.width || testY < 0 || testY >= this.map.height) {
-          hitWall = true
-          distance = this.depth
-        } else {
-          if (this.map.walls[testY * this.map.width + testX] !== 0) {
-            hitWall = true
-          }
-        }
-
-        const posx = player.x * 10 + 10
-        const posy = player.y * 10 + 10
-
-        this.debugger.innerHTML = `${angle}, ${angle + this.fov / 2}, ${angle - this.fov / 2}`
-
-        this.ctx.arc(posx, posy, 50, angle + this.fov / 2, angle - this.fov / 2, true);
-        this.ctx.fillRect(testX * 10, testY * 10, 1, 1)
-      }
-
-      this.ctx.stroke()
-      distance *= Math.cos(angle)
-      const ceiling = (this.map.height / 2) - (this.map.height / distance)
-      const floor = this.map.height - ceiling
-
-      for (let y = 0; y < this.map.height; y++) {
-        const point = y * this.map.width + x
+      for (let y = 0; y < this.height; y++) {
+        const point = y * this.width + x
         if (y < ceiling) {
           // ceiling
           this.screen[point] = ' '
           
         } else if (y > ceiling && y <= floor) {
-          let shade = ' '
           // wall
-          if (distance < this.depth / 4) shade = '█'
-          else if (distance < this.depth / 3) shade = '▓'
-          else if (distance < this.depth / 2) shade = '▒'
-          else if (distance < this.depth) shade = '░'
+          let shade = ' '
+          const d = Math.floor(distance)
+          //console.log(`col: ${x} || cell: ${y} || distance: ${d} || very close: ${this.depth / 4}, ${this.depth / 3}, ${this.depth / 2}, ${this.depth}`)
+          if (d <= this.depth / 4) shade = '░'
+          else if (d < this.depth / 3) shade = '▒'
+          else if (d < this.depth / 2) shade = '▓'
+          else if (d < this.depth) shade = '█'
+          else shade = ' '
 
           this.screen[point] = shade
         } else {
@@ -84,7 +62,7 @@ export default class Camera {
   draw () {
     let str = ``
     this.screen.forEach((el, index) => {
-      if (index % this.map.width === 0) {
+      if (index % this.width === 0) {
         str += `<br>`
       }
 
