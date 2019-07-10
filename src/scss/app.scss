@@ -1,6 +1,21 @@
-@import 'variables';
-@import 'minimap';
-
 * {
   box-sizing: border-box;
+}
+
+body {
+  background: black;
+  font-family: Courier, monospace;
+  color: white;
+}
+
+.minimap {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  line-height: 10px;
+}
+
+.camera {
+  font-size: 8px;
+  white-space: pre;
 }

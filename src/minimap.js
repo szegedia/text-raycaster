@@ -1,15 +1,12 @@
 export default class Minimap {
-  constructor (map, player) {
+  constructor (map, player, camera) {
     this.map = map
     this.player = player
-    this.playerChar = 'P'
-    this.cache = {
-      x: null,
-      y: null
-    }
-    this.shades = {
-      0: '.',
-      1: '#'
+    this.charSet = {
+      player: 'P',
+      wall: '#',
+      floor: '.',
+      sight: ' '
     }
 
     this.init()
@@ -33,22 +30,27 @@ export default class Minimap {
     }
   }
 
-  updateCompass () {
-    const angle = this.player.direction
-
-    this.compass.style.transform = `rotate(${angle}rad)`
-  }
-
   update () {
-    this.updateCompass()
-    const { x, y } = this.getPlayerPos()
+    const { x: playerX, y: playerY } = this.getPlayerPos()
     const buffer = this.map.walls.map((row, rowIndex) => {
-      return row.map((col, colIndex) => {
-        if (x === colIndex && y === rowIndex) {
-          return this.playerChar
+      return row.split('').map((col, colIndex) => {
+        // player
+        if (colIndex === playerX && rowIndex === playerY) {
+          return this.charSet.player
         }
 
-        return this.shades[col]
+        // wall
+        if (col === this.map.charSet.wall) {
+          return this.charSet.wall
+        }
+
+        // eyesight
+        if (this.map.eyeshot[rowIndex] && this.map.eyeshot[rowIndex][colIndex]) {
+          return this.charSet.sight
+        }
+        
+        // floor
+        return this.charSet.floor
       }).join('')
     }).join('\n')
 

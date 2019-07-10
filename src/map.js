@@ -1,30 +1,34 @@
 export default class Map {
   constructor () {
-    // this.walls = new Uint8Array(this.width * this.height)
     this.walls = [
-      [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-      [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-      [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-      [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-      [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-      [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-      [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-      [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-      [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-      [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+      '###############',
+      '#.............#',
+      '#.............#',
+      '#.............#',
+      '#..........####',
+      '#.............#',
+      '#.............#',
+      '#.............#',
+      '#.............#',
+      '#.......###...#',
+      '#.............#',
+      '#.............#',
+      '#.............#',
+      '###############'
     ]
 
     this.width = this.walls[0].length
     this.height = this.walls.length
+    this.eyeshot = []
+    this.charSet = {
+      wall: '#',
+      floor: '.'
+    }
   }
 
   get (x, y) {
     x = Math.floor(x)
     y = Math.floor(y)
-
-    console.log('map get', x,y )
-
-    // console.log(`map get x: ${x}, y: ${y} >> ${this.walls[y][x]}`)
 
     if (x < 0 || x > this.width - 1 || y < 0 || y > this.height - 1) {
       return -1
@@ -33,38 +37,59 @@ export default class Map {
     return this.walls[y][x]
   }
 
-  // cast ({ x, y }, angle, depth) {
-  //   const sin = Math.sin(angle)
-  //   const cos = Math.cos(angle)
+  isWall (x, y) {
+    const char = this.get(x, y)
+    return char === this.charSet.wall
+  }
 
+  cast (player, angle, depth) {
+    const sin = Math.sin(angle)
+    const cos = Math.cos(angle)
 
-  // }
-
-  cast ({ x, y, direction }, angle, depth) {
-    const eyeX = Math.cos(angle)
-    const eyeY = Math.sin(angle)
-
-    let wallHit = false
     let distance = 0
+    let hitWall = false
+    let boundary = false
 
-    while (!wallHit && distance < depth) {
+    while (!hitWall && distance < depth) {
       distance += 1
+      const nTestX = Math.floor(player.x + cos * distance)
+      const nTestY = Math.floor(player.y + sin * distance)
 
-      const checkPosX = x + eyeX * distance
-      const checkPosY = y + eyeY * distance
-      const hitTest = this.get(checkPosX, checkPosY)
+      this.eyeshot[nTestY] = this.eyeshot[nTestY] || []
+      this.eyeshot[nTestY][nTestX] = true
 
-
-      if (hitTest === -1) {
-        wallHit = true
+      if (nTestX < 0 || nTestX >= this.width || nTestY < 0 || nTestY >= this.height) {
         distance = depth
-      } else  {
-        if (hitTest !== 0) {
-          wallHit = true
+        hitWall = true
+      } else {
+        if (this.walls[nTestY][nTestX] === this.charSet.wall) {
+          hitWall = true
+
+          const p = []
+
+          for (let tx = 0; tx < 2; tx++) {
+            for (let ty = 0; ty < 2; ty++) {
+              const vy = nTestX + tx - player.x
+              const vx = nTestY + ty - player.y
+              const d = Math.hypot(vx, vy)
+              const dot = (sin * vx / d) + (cos * vy / d)
+              p.push([d, dot])
+            }
+          }
+
+          const bound = 0.01
+          const sorted = p.sort((a, b) => a[0] < b[0])
+
+          if (Math.acos(sorted[0][1]) < bound) boundary = true
+          if (Math.acos(sorted[1][1]) < bound) boundary = true
+          if (Math.acos(sorted[2][1]) < bound) boundary = true
         }
       }
     }
 
-    return distance * Math.cos(angle - direction)
+    // remove fisheye effect
+    distance *= Math.cos(angle - player.direction)
+
+    return { distance, boundary }
   }
 }

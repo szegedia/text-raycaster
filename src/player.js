@@ -7,7 +7,15 @@ export default class Player {
     this.speed = 10
     this.rotateSpeed = Math.PI * 2
     this.direction = direction
-    this.debugPane = document.body.querySelector('#playerInfo')
+
+    this.init()
+  }
+
+  init () {
+    this.info = document.createElement('div')
+    this.info.classList.add('player-info')
+
+    document.body.appendChild(this.info)
   }
 
   rotate (angle) {
@@ -18,8 +26,8 @@ export default class Player {
     const dx = Math.cos(this.direction) * distance
     const dy = Math.sin(this.direction) * distance
 
-    if (map.get(this.x + dx, this.y) <= 0) this.x += dx
-    if (map.get(this.x, this.y + dy) <= 0) this.y += dy
+    if (!map.isWall(this.x + dx, this.y)) this.x += dx
+    if (!map.isWall(this.x, this.y + dy)) this.y += dy
   }
 
   update (controls, map, tick) {
@@ -28,14 +36,18 @@ export default class Player {
     if (controls.forward) this.move((this.speed * tick), map)
     if (controls.backward) this.move(-(this.speed * tick), map)
 
-    this.debugPane.innerHTML =`
-    <div>tick: ${tick}</div>
-    <div>direction: ${this.direction}</div>
-    <div>left: ${controls.left}</div>
-    <div>up: ${controls.forward}</div>
-    <div>right: ${controls.right}</div>
-    <div>down: ${controls.backward}</div>
-    <div>x: ${this.x}</div>
-    <div>y: ${this.y}</div>`
+    this.updateInfo(controls)
+  }
+
+  updateInfo ({ left, right, forward, backward }) {
+    this.info.innerHTML = `
+      x: ${this.x.toFixed(2)};
+      y: ${this.y.toFixed(2)};
+      r: ${this.direction.toFixed(2)}rad;
+      L: ${left};
+      R: ${right};
+      F: ${forward};
+      B: ${backward}
+    `
   }
 }
