@@ -63,9 +63,9 @@ export default class Camera {
           // floot
           const b = 1 - (y - this.height / 2) / (this.height / 2)
 
-					if (b < 0.25) paint = this.charSet.floor1
-					else if (b < 0.5)	 paint = this.charSet.floor2
-					else if (b < 0.75) paint = this.charSet.floor3
+          if (b < 0.25) paint = this.charSet.floor1
+          else if (b < 0.5)	 paint = this.charSet.floor2
+          else if (b < 0.75) paint = this.charSet.floor3
           else if (b < 0.9)	 paint = this.charSet.floor4
           else paint = ' '
         }
