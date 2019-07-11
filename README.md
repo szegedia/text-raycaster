@@ -4,7 +4,7 @@ Ispired by [javidx9](https://github.com/OneLoneCoder)'s [command line fps](https
 ![Raycaster screenshot](/docs/screenshots/raycaster.png?raw=true "Raycaster")
 
 ## minimap
-![Minimap](/docs/screenshots/minimap.png?raw=true "minimap")
+![Minimap](/docs/screenshots/minimap.gif?raw=true "minimap")
 
 # Install
 - yarn install
