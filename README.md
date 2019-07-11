@@ -1,9 +1,11 @@
 # Text raycaster
+Another raycasting engine in Javascript but now with unicode characters display. [Live demo](https://szegedia.github.io/text-raycaster/)
+
 Ispired by [javidx9](https://github.com/OneLoneCoder)'s [command line fps](https://github.com/OneLoneCoder/CommandLineFPS)
 
 ![Raycaster screenshot](/docs/screenshots/raycaster.png?raw=true "Raycaster")
 
-## minimap
+## Minimap
 ![Minimap](/docs/screenshots/minimap.gif?raw=true "minimap")
 
 # Install

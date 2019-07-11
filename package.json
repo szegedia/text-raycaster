@@ -4,10 +4,13 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "dev": "parcel index.html"
+    "dev": "parcel index.html",
+    "predeploy": "parcel build index.html --public-url ./",
+    "deploy": "push-dir --force --dir=dist --branch=gh-pages --cleanup"
   },
   "devDependencies": {
     "parcel": "^1.12.3",
+    "push-dir": "^0.4.1",
     "sass": "^1.22.3"
   }
 }
